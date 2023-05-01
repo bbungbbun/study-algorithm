@@ -83,9 +83,11 @@ void merge (struct Person* data, int start, int mid, int end){
 }
 
 void printArray (struct Person* data, int length){
-	int index;
+	int i;
 
-	for (index = 0; index < length - 1; index++)
-		printf("%s, \t", data[index]);
-	printf("%s ] \n\n", data[index]);
+	printf("[ ");
+
+	for (i = 0; i < length - 1; i++)
+		printf("(%s, %d), ", data[i].name, data[i].score);
+	printf("(%s, %d)] \n\n ", data[i].name, data[i].score);
 }
