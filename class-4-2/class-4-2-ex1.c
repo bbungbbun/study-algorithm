@@ -58,7 +58,7 @@ int main(void) {
 	
 	fseek(srcFile, 0L, SEEK_SET);
 
-	for (f = 0; f < fNumber; f++)
+	for (f = 0; f < fNumber - 1; f++)
 	{
 		fread(buffer, RCDRSIZE, BFRSIZE, srcFile);
 		bubbleSort(buffer, BFRSIZE);
@@ -82,38 +82,103 @@ int main(void) {
 	int frByte;
 
 	for (f = 0; f < fNumber; f++){
-		rewind();
-		frbyte = fread(&(),RCDRSIZE)
+		rewind(tmpFiles[f].fp);
+		frbyte = fread(&(tmpFiles[f].fp),RCDRSIZE,1,tmpFiles[f].fp);
+		if(frByte == 0) tmpFiles[f].is_eof = 1;
 	}
+
+	int done;
+
+	while (1)
+	{
+		done = 1;
+		for(f=0; f< fNumber; f++)
+			if (tmpFiles[f].is_eof) done = 0;
+
+		if(done) break;
+		minFile = 0;
+		for (f = 0; f < fNumber; f++)
+		{
+			if (tmpFiles[f].is_eof == 1) continue;
+			else{
+				minFile = f;
+				break;
+			}
+		}
+		for (f = 0; f < fNumber; f++){
+			if (tmpFiles[f].is_eof == 1) continue;
+			else if(tmpFiles[minFile].min > tmpFiles[f].min)
+			{
+				minFile = f;
+			}
+		}
+
+		fwrite(&(tmpFiles[minFile].min),RCDRSIZE, 1, dstFile);
+
+		frByte = fread(&(tmpFiles[minFile].min), RCDRSIZE, 1, tmpFiles[minFile].fp);
+
+		if (frByte == 0) tmpFiles[minFile].is_eof = 1;
+			
+	} // end of while
+
+	for (f = 0; f < fNumber; f++){
+		fclose(tmpFiles[f].fp);
+		_unlink(tmpFiles[f].fname);
+	}
+
+	fclose(dstFile);
+
+	free(tmpFiles);
+	
+	int data;
+
+	srcFile = fopen("c://temp//src.data", "rb");
+
+	printf("srcFile: ");
+
+	for (i = 0; i < rcdNumber; i++)
+	{
+		fread(&data, RCDRSIZE, 1, srcFile);
+		printf(" %d", data);
+	}
+
+	printf("\n\n");
+
+	fclose(srcFile);
+
+	dstFile = fopen("c://temp//dst.data", "rb")
+
+	printf("dstFile: ");
+
+	for (i = 0; i < rcdNumber; i++)
+	{
+		fread(&data, RCDRSIZE, 1, dstFile);
+		printf(" %d", data);
+	}
+	
+	printf("\n\n");
+
+	fclose(dstFile);
+
 	return 0;
 }
 
-void bubbleSort (int* data, int start, int end){
+void bubbleSort (int* buf, int buflen){
+	int i, j, tmp;
 
-	if (start >= end) return;
-
-	int P, PE, FLE, temp;
-
-	P = start;
-	FG = start + 1;
-	FLE = end;
-
-	while (FG <= FLE)
+	for (i = buflen - 1; i > 0; i--)
 	{
-		while ((data[FG] <= data[P]) && (FG <= end)) FG++;
-		while ((data[FLE] > data[P]) && (FG >= start)) FLE++;
-		if (FG >= FLE) break;
-		else {
-			temp = data[FG];
-			data[FG] = data[FLE];
-			data[FLE] = temp
+		for (j = 0; j < i; j++)
+		{
+			if (buf[j] > buf[j + 1])
+			{
+				tmp = buf[j];
+				buf[j] = buf[j + 1];
+				buf[j + 1] = tmp;
+			}
+			
 		}
 		
-		temp = data[FLE];
-		data[FLE] = data[P];
-		data[P] = temp;
-
-		bubbleSort(data, start, FLE - 1);
-		bubbleSort(data, FLE + 1, end);
 	}
+	
 }
